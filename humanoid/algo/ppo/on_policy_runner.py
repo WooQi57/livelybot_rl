@@ -51,11 +51,12 @@ class OnPolicyRunner:
         self.policy_cfg = train_cfg["policy"]
         self.all_cfg = train_cfg
         self.wandb_run_name = (
-            datetime.now().strftime("%b%d_%H-%M-%S")
-            + "_"
-            + train_cfg["runner"]["experiment_name"]
+            train_cfg["runner"]["experiment_name"]
             + "_"
             + train_cfg["runner"]["run_name"]
+            + "_"
+            + datetime.now().strftime("%b%d_%H-%M-%S")
+
         )
         self.device = device
         self.env = env
@@ -94,7 +95,7 @@ class OnPolicyRunner:
         # initialize writer
         if self.log_dir is not None and self.writer is None:
             wandb.init(
-                project="XBot",
+                project="LivelyBot",
                 sync_tensorboard=True,
                 name=self.wandb_run_name,
                 config=self.all_cfg,

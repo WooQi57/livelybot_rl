@@ -227,8 +227,7 @@ class PaiFreeEnv(LeggedRobot):
 
         self.privileged_obs_buf = torch.cat((
             self.command_input,  # 2 + 3
-            (self.dof_pos - self.default_joint_pd_target) * \
-            self.obs_scales.dof_pos,  # 12
+            (self.dof_pos - self.default_joint_pd_target) * self.obs_scales.dof_pos,  # 12
             self.dof_vel * self.obs_scales.dof_vel,  # 12
             self.actions,  # 12
             diff,  # 12

@@ -225,6 +225,12 @@ def get_args():
             "type": int,
             "help": "Maximum number of training iterations. Overrides config file if provided.",
         },
+        {
+            "name": "--web",
+            "action": "store_true",
+            "default": False,
+            "help": "Use web for streaming from headless servers",
+        },
     ]
     # parse arguments
     args = gymutil.parse_arguments(

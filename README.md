@@ -17,7 +17,8 @@ This repository provides a reinforcement learning environment used to train High
 6. Install livelybot_rl_control:
    - Clone this repository.
    - `cd livelybot_rl_control && pip install -e .`
-
+7. Install the following for web viewing
+   - `pip install imageio[ffmpeg] Flask `
 
 
 ## Usage Guide

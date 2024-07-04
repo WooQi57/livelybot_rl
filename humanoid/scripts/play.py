@@ -43,9 +43,12 @@ from isaacgym.torch_utils import *
 import torch
 from tqdm import tqdm
 from datetime import datetime
-
+from humanoid.utils import webviewer
 
 def play(args):
+    if args.web:
+        web_viewer = webviewer.WebViewer(output_video_file="../figs/output.mp4")
+
     env_cfg, train_cfg = task_registry.get_cfgs(name=args.task)
     # override some parameters for testing
     env_cfg.env.num_envs = min(env_cfg.env.num_envs, 64)
@@ -69,6 +72,9 @@ def play(args):
     # prepare environment
     env, _ = task_registry.make_env(name=args.task, args=args, env_cfg=env_cfg)
     env.set_camera(env_cfg.viewer.pos, env_cfg.viewer.lookat)
+
+    if args.web:
+        web_viewer.setup(env)
 
     obs = env.get_observations()
 
@@ -123,6 +129,12 @@ def play(args):
             env.commands[:, 3] = 0.
 
         obs, critic_obs, rews, dones, infos = env.step(actions.detach())
+        if args.web:
+            web_viewer.render(fetch_results=True,
+                        step_graphics=True,
+                        render_all_camera_sensors=True,
+                        wait_for_page_load=True)
+            web_viewer.write_vid()
 
         if RENDER:
             env.gym.fetch_results(env.sim, True)
@@ -163,7 +175,7 @@ def play(args):
 
 if __name__ == '__main__':
     EXPORT_POLICY = True
-    RENDER = True
+    RENDER = False
     FIX_COMMAND = True
     args = get_args()
     play(args)

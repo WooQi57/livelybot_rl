@@ -154,7 +154,7 @@ class TaskRegistry():
         resume = train_cfg.runner.resume
         if resume:
             # load previously trained model
-            resume_path = "/home/imagining/Desktop/livelybot_rl_control/logs/Pai_ppo/Jun19_18-15-25_v1/model_1300.pt"
+            resume_path = get_load_path(log_root, load_run=train_cfg.runner.load_run, checkpoint=train_cfg.runner.checkpoint)
             print(f"Loading model from: {resume_path}")
             runner.load(resume_path, load_optimizer=False)
         return runner, train_cfg

@@ -98,6 +98,7 @@ class OnPolicyRunner:
                 project="LivelyBot",
                 sync_tensorboard=True,
                 name=self.wandb_run_name,
+                entity="humanoid-run-cs234",
                 config=self.all_cfg,
             )
             self.writer = SummaryWriter(log_dir=self.log_dir, flush_secs=10)

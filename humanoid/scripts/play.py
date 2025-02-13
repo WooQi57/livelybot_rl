@@ -47,7 +47,7 @@ from humanoid.utils import webviewer
 
 def play(args):
     if args.web:
-        web_viewer = webviewer.WebViewer(record=False, output_video_file="../figs/output.mp4")
+        web_viewer = webviewer.WebViewer(record=True, output_video_file="./figs/output.mp4")
 
     env_cfg, train_cfg = task_registry.get_cfgs(name=args.task)
     # override some parameters for testing

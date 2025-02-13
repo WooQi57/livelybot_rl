@@ -3,7 +3,6 @@
 This repository provides a reinforcement learning environment used to train HighTorque’s Legged Robot using NVIDIA’s Isaac Gym. Livelybot_rl_control also integrates a sim-to-sim framework from Isaac Gym to Mujoco that allows users to verify the trained policies in different physical simulations to ensure the robustness and generalization of the policies.
 
 ## Installation
-The repo is already installed in the server.
 
 1. Generate a new Python virtual environment with Python 3.8 using `conda create -n myenv python=3.8`.
 2. For the best performance, we recommend using NVIDIA driver version 525 `sudo apt install nvidia-driver-525`. The minimal driver version supported is 515. If you're unable to install version 525, ensure that your system has at least version 515 to maintain basic functionality.
@@ -25,14 +24,11 @@ The repo is already installed in the server.
 ## Usage Guide
 
 #### Examples
-We only need the first two steps. The conda environment 'pibot' is automatically activated in any bash terminal.
 
 ```bash
-# Launching PPO Policy Training for run '000' Across 4096 Environments
+# Launching PPO Policy Training for '000' Across 4096 Environments
 # This command initiates the PPO algorithm-based training for the humanoid task.
-screen -Rd train # Run in a separate screen session in background
-python scripts/train.py --task=pai_ppo --run_name 000-note-on-experiment --headless --num_envs 4096
-# press 'Ctrl+a then d' to detach the screen session
+python scripts/train.py --task=pai_ppo --run_name 000 --headless --num_envs 4096
 
 # Evaluating the Trained PPO Policy
 # This command loads the '000' policy for performance assessment in its environment. 

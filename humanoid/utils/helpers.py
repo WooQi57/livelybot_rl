@@ -119,7 +119,15 @@ def get_load_path(root, load_run=-1, checkpoint=-1):
     if load_run == -1:
         load_run = last_run
     else:
-        load_run = os.path.join(root, load_run)
+        found_run = False
+        for dir in runs:
+            if str(load_run) in dir:
+                load_run = os.path.join(root, dir)
+                found_run = True
+                break
+        if not found_run:
+            raise ValueError("Run not found: " + str(load_run))
+        
 
     if checkpoint == -1:
         models = [file for file in os.listdir(load_run) if "model" in file]

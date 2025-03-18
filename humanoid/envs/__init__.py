@@ -35,6 +35,9 @@ from .base.legged_robot import LeggedRobot
 
 from .pai.pai_config import PaiCfg, PaiCfgPPO
 from .pai.pai_env import PaiFreeEnv
+from .pai.pai_jump_config import PaiJmpCfg, PaiJmpCfgPPO
+from .pai.pai_jump_env import PaiJmpEnv
 
 from humanoid.utils.task_registry import task_registry
 task_registry.register( "pai_ppo", PaiFreeEnv, PaiCfg(), PaiCfgPPO() )
+task_registry.register( "pai_jump", PaiJmpEnv, PaiJmpCfg(), PaiJmpCfgPPO() )

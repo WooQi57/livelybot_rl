@@ -40,6 +40,7 @@ from .ppo import PPO
 from .actor_critic import ActorCritic
 from humanoid.algo.vec_env import VecEnv
 from torch.utils.tensorboard import SummaryWriter
+from humanoid import LEGGED_GYM_ROOT_DIR, LEGGED_GYM_ENVS_DIR
 
 
 class OnPolicyRunner:
@@ -101,6 +102,7 @@ class OnPolicyRunner:
                 entity="humanoid-run-cs234",
                 config=self.all_cfg,
             )
+            wandb.save(LEGGED_GYM_ENVS_DIR+"/pai/*")
             self.writer = SummaryWriter(log_dir=self.log_dir, flush_secs=10)
         if init_at_random_ep_len:
             self.env.episode_length_buf = torch.randint_like(
@@ -161,14 +163,25 @@ class OnPolicyRunner:
                 # Learning step
                 start = stop
                 self.alg.compute_returns(critic_obs)
-
+            # print(f"{rewbuffer=}")
             mean_value_loss, mean_surrogate_loss = self.alg.update()
             stop = time.time()
             learn_time = stop - start
             if self.log_dir is not None:
                 self.log(locals())
-            if it % self.save_interval == 0:
-                self.save(os.path.join(self.log_dir, "model_{}.pt".format(it)))
+            if it <= 50:
+                if it % 10 == 0:
+                    self.save(os.path.join(self.log_dir, "model_{}.pt".format(it)))
+            elif it < 1000:
+                if it % self.save_interval == 0:
+                    self.save(os.path.join(self.log_dir, "model_{}.pt".format(it)))
+            elif it < 2000:
+                if it % (2*self.save_interval) == 0:
+                    self.save(os.path.join(self.log_dir, "model_{}.pt".format(it)))
+            else:
+                if it % (10*self.save_interval) == 0:
+                    self.save(os.path.join(self.log_dir, "model_{}.pt".format(it)))
+            
             ep_infos.clear()
 
         self.current_learning_iteration += num_learning_iterations

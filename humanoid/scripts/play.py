@@ -51,7 +51,8 @@ def play(args):
 
     env_cfg, train_cfg = task_registry.get_cfgs(name=args.task)
     # override some parameters for testing
-    env_cfg.env.num_envs = min(env_cfg.env.num_envs, 64)
+    env_cfg.env.num_envs = min(env_cfg.env.num_envs, 2)
+    env_cfg.env.episode_length_s = 4
     env_cfg.sim.max_gpu_contact_pairs = 2**10
     # env_cfg.terrain.mesh_type = 'trimesh'
     env_cfg.terrain.mesh_type = 'plane'
@@ -60,7 +61,7 @@ def play(args):
     env_cfg.terrain.curriculum = False     
     env_cfg.terrain.max_init_terrain_level = 5
     env_cfg.noise.add_noise = True
-    env_cfg.domain_rand.push_robots = True 
+    env_cfg.domain_rand.push_robots = False 
     env_cfg.domain_rand.joint_angle_noise = 0.
     env_cfg.noise.curriculum = False
     env_cfg.noise.noise_level = 0.5
@@ -90,9 +91,9 @@ def play(args):
         print('Exported policy as jit script to: ', path)
 
     logger = Logger(env.dt)
-    robot_index = 33 # which robot is used for logging
+    robot_index = 0 # which robot is used for logging
     joint_index = 1 # which joint is used for logging
-    stop_state_log = 500 # number of steps before plotting states
+    stop_state_log = 1000 # number of steps before plotting states
     if RENDER:
         camera_properties = gymapi.CameraProperties()
         camera_properties.width = 1920
@@ -120,13 +121,16 @@ def play(args):
 
     for i in tqdm(range(stop_state_log)):
 
-        actions = policy(obs.detach()) # * 0.
-        
+        actions = policy(obs.detach())   * 1
+        # print("actions:", actions)
+        # actions = env.ref_dof_pos
         if FIX_COMMAND:
             env.commands[:, 0] = 0.5    # 1.0
             env.commands[:, 1] = 0.
             env.commands[:, 2] = 0.
             env.commands[:, 3] = 0.
+            env.commands[:, 4] = 0.5
+            # env.jumping_buffer = (env.commands[:, 4] >= env.cfg.commands.jumping_height_min).int()  # only need to jump if cmd > min_height
 
         obs, critic_obs, rews, dones, infos = env.step(actions.detach())
         if args.web:
@@ -174,7 +178,7 @@ def play(args):
         video.release()
 
 if __name__ == '__main__':
-    EXPORT_POLICY = True
+    EXPORT_POLICY = False
     RENDER = False
     FIX_COMMAND = True
     args = get_args()

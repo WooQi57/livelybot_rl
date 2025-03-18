@@ -40,75 +40,10 @@ python scripts/train.py --task=pai_ppo --run_name 000-note-on-experiment --headl
 # Additionally, it automatically exports a JIT model, suitable for deployment purposes.
 # Click on the pop up window in VSCode to view the rendered simulation.
 python scripts/play.py --task=pai_ppo --load_run 000 --web
-
-# Implementing Simulation-to-Simulation Model Transformation
-# This command facilitates a sim-to-sim transformation using exported 'v1' policy.
-python scripts/sim2sim.py --load_model /path/to/logs/Pai_ppo/exported/policies/policy_1.pt
-
-# Run our trained policy
-python scripts/sim2sim.py --load_model /path/to/logs/Pai_ppo/exported/policies/policy_example.pt
-
 ```
 
-#### 1. Default Tasks
-
-- **pai_ppo**
-   - Purpose: Baseline, PPO policy, Multi-frame low-level control
-   - Observation Space: Variable $(47 \times H)$ dimensions, where $H$ is the number of frames
-   - $[O_{t-H} ... O_t]$
-   - Privileged Information: $73$ dimensions
-
-#### 2. PPO Policy
-- **Training Command**: For training the PPO policy, execute:
-  ```
-  python humanoid/scripts/train.py --task=humanoid_ppo --load_run log_file_path --name run_name
-  ```
-- **Running a Trained Policy**: To deploy a trained PPO policy, use:
-  ```
-  python humanoid/scripts/play.py --task=humanoid_ppo --load_run log_file_path --name run_name
-  ```
-- By default, the latest model of the last run from the experiment folder is loaded. However, other run iterations/models can be selected by adjusting `load_run` and `checkpoint` in the training config.
-
-#### 3. Sim-to-sim
-
-- **Mujoco-based Sim2Sim Deployment**: Utilize Mujoco for executing simulation-to-simulation (sim2sim) deployments with the command below:
-  ```
-  python scripts/sim2sim.py --load_model /path/to/export/model.pt
-  ```
-
-#### 4. Parameters
-- **CPU and GPU Usage**: To run simulations on the CPU, set both `--sim_device=cpu` and `--rl_device=cpu`. For GPU operations, specify `--sim_device=cuda:{0,1,2...}` and `--rl_device={0,1,2...}` accordingly. Please note that `CUDA_VISIBLE_DEVICES` is not applicable, and it's essential to match the `--sim_device` and `--rl_device` settings.
-- **Headless Operation**: Include `--headless` for operations without rendering.
-- **Rendering Control**: Press 'v' to toggle rendering during training.
-- **Policy Location**: Trained policies are saved in `humanoid/logs/<experiment_name>/<date_time>_<run_name>/model_<iteration>.pt`.
-
-#### 5. Command-Line Arguments
-For RL training, please refer to `humanoid/utils/helpers.py#L161`.
-For the sim-to-sim process, please refer to `humanoid/scripts/sim2sim.py#L169`.
-
-## Code Structure
-
-1. Every environment hinges on an `env` file (`legged_robot.py`) and a `configuration` file (`legged_robot_config.py`). The latter houses two classes: `LeggedRobotCfg` (encompassing all environmental parameters) and `LeggedRobotCfgPPO` (denoting all training parameters).
-2. Both `env` and `config` classes use inheritance.
-3. Non-zero reward scales specified in `cfg` contribute a function of the corresponding name to the sum-total reward.
-4. Tasks must be registered with `task_registry.register(name, EnvClass, EnvConfig, TrainConfig)`. Registration may occur within `envs/__init__.py`, or outside of this repository.
-
-
-## Add a new environment 
-
-The base environment `legged_robot` constructs a rough terrain locomotion task. The corresponding configuration does not specify a robot asset (URDF/ MJCF) and no reward scales.
-
-1. If you need to add a new environment, create a new folder in the `envs/` directory with a configuration file named `<your_env>_config.py`. The new configuration should inherit from existing environment configurations.
-2. If proposing a new robot:
-    - Insert the corresponding assets in the `resources/` folder.
-    - In the `cfg` file, set the path to the asset, define body names, default_joint_positions, and PD gains. Specify the desired `train_cfg` and the environment's name (python class).
-    - In the `train_cfg`, set the `experiment_name` and `run_name`.
-3. If needed, create your environment in `<your_env>.py`. Inherit from existing environments, override desired functions and/or add your reward functions.
-4. Register your environment in `humanoid/envs/__init__.py`.
-5. Modify or tune other parameters in your `cfg` or `cfg_train` as per requirements. To remove the reward, set its scale to zero. Avoid modifying the parameters of other environments!
-6. If you want a new robot/environment to perform sim2sim, you may need to modify `humanoid/scripts/sim2sim.py`: 
-    - Check the joint mapping of the robot between MJCF and URDF.
-    - Change the initial joint position of the robot according to your trained policy.
+#### Results
+The results of the play.py are in figs/
 
 ## Acknowledgment
 
